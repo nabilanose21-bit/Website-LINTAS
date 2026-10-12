@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lintas - Logistics Intelligence & Navigation Tracking Analysis System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        lintas: {
+                            brown: '#6D4C41',
+                            lightBrown: '#D7C49E',
+                            pink: '#F8BBD0',
+                            softPink: '#FFEBEE',
+                            yellow: '#FFF8E1',
+                            cream: '#FFFDE7',
+                            green: '#C8E6C9',
+                            sage: '#A5D6A7',
+                            darkSage: '#388E3C',
+                            earth: '#4E342E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-warm {
+            background: rgba(255, 253, 231, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(215, 196, 158, 0.4);
+        }
+        .dark .glass-warm {
+            background: rgba(43, 33, 24, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(88, 47, 14, 0.4);
+        }
+        /* Custom Cute Truck Driving Animation */
+        @keyframes driveTruck {
+            0% { transform: translateX(0px); }
+            50% { transform: translateX(20px) translateY(-2px); }
+            100% { transform: translateX(0px); }
+        }
+        .animate-truck {
+            animation: driveTruck 2.5s ease-in-out infinite;
+        }
+        @keyframes pulseRadar {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .animate-radar {
+            animation: pulseRadar 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#FFFDE7] text-[#4E342E] dark:bg-zinc-950 dark:text-zinc-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="sticky top-0 z-50 glass-warm border-b border-[#D7C49E]/40 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#6D4C41] to-[#A5D6A7] flex items-center justify-center shadow-md text-white font-bold text-xl">
+                <i class="fa-solid fa-compass animate-spin" style="animation-duration: 12s;"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-lg font-bold bg-gradient-to-r from-[#6D4C41] to-[#388E3C] dark:from-[#FFF8E1] dark:to-[#A5D6A7] bg-clip-text text-transparent">LINTAS</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] dark:text-[#A5D6A7] font-mono font-semibold">Sistem Deterministik</span>
+                </div>
+                <span class="text-[11px] text-zinc-600 dark:text-zinc-400 font-medium">Logistics Intelligence & Navigation Tracking Analysis System</span>
+            </div>
+        </div>
+
+        <!-- Deterministic Workflow Quick Steps -->
+        <div class="hidden xl:flex items-center space-x-1 bg-white/80 dark:bg-zinc-900/80 p-1.5 rounded-2xl border border-[#D7C49E]/30 text-xs font-semibold">
+            <button onclick="switchTab('dashboard')" class="workflow-step-btn px-3 py-1.5 rounded-xl bg-[#6D4C41] text-white shadow-sm flex items-center space-x-1.5 transition"><i class="fa-solid fa-house"><span>Beranda</span></i></button>
+            <button onclick="switchTab('map')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-map-location-dot"><span>Peta UMKM</span></i></button>
+            <button onclick="switchTab('collab')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-boxes-packing"><span>Gabung Kirim</span></i></button>
+            <button onclick="switchTab('monitor')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-location-crosshairs"><span>Monitor</span></i></button>
+            <button onclick="switchTab('detect')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-triangle-exclamation"><span>Deteksi</span></i></button>
+            <button onclick="switchTab('predict')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-calculator"><span>Prediksi</span></i></button>
+            <button onclick="switchTab('recommend')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-lightbulb"><span>Solusi</span></i></button>
+            <button onclick="switchTab('evaluate')" class="workflow-step-btn px-3 py-1.5 rounded-xl text-zinc-600 dark:text-zinc-400 flex items-center space-x-1.5 transition"><i class="fa-solid fa-chart-column"><span>Evaluasi</span></i></button>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <div class="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#F8BBD0]/40 border border-[#F8BBD0] text-xs font-mono text-[#6D4C41] dark:text-[#FFF8E1]">
+                <i class="fa-solid fa-shield-halved text-[#6D4C41]"></i>
+                <span>100% Non-AI / Aturan Nyata</span>
+            </div>
+            <button onclick="toggleTheme()" class="p-2.5 rounded-xl bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] transition shadow-sm border border-[#D7C49E]/30">
+                <i class="fa-solid fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- Welcome Banner for Sellers / MSMEs -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#6D4C41] via-[#4E342E] to-zinc-900 p-6 md:p-8 text-white shadow-xl border border-[#D7C49E]/30">
+            <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-[#FFF8E1]/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#FFF8E1]/20 text-[#FFF8E1] text-xs font-medium border border-[#FFF8E1]/30">
+                        <i class="fa-solid fa-hands-holding-child"></i>
+                        <span>Pemberdayaan UMKM & Sektor Kreatif Nusantara</span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Solusi Logistik Cerdas Tanpa Ribet untuk Pengrajin & Penjual Lokal</h1>
+                    <p class="text-sm text-[#FFF8E1]/90 leading-relaxed">
+                        Atasi kendala ongkir mahal, produk rusak di jalan, dan keterlambatan pengiriman dengan alur deterministik transparan: <strong>Monitor → Deteksi → Prediksi → Simulasi → Solusi → Evaluasi</strong>.
+                    </p>
+                </div>
+                <!-- Cute Truck Animation Card -->
+                <div class="bg-white/10 backdrop-blur border border-white/15 p-4 rounded-2xl flex items-center space-x-4 w-full md:w-auto">
+                    <div class="text-3xl animate-truck">🚚</div>
+                    <div>
+                        <span class="block text-xs text-[#FFF8E1]/80 font-medium">Status Armada Klaster</span>
+                        <span class="text-lg font-bold text-[#FFF8E1]">12 Pengiriman Aktif</span>
+                        <span class="block text-[10px] text-[#A5D6A7] font-semibold">Tepat Waktu 99.4%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs (Mobile & Desktop) -->
+        <div class="flex overflow-x-auto pb-2 space-x-2 scrollbar-none">
+            <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-[#6D4C41] text-white shadow-md whitespace-nowrap">
+                <i class="fa-solid fa-house"></i>
+                <span>1. Beranda / Dashboard</span>
+            </button>
+            <button onclick="switchTab('map')" id="tab-btn-map" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-map-location-dot text-[#6D4C41]"></i>
+                <span>2. 📍 Peta UMKM</span>
+            </button>
+            <button onclick="switchTab('collab')" id="tab-btn-collab" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-boxes-packing text-amber-600"></i>
+                <span>3. 📦 Gabung Pengiriman</span>
+            </button>
+            <button onclick="switchTab('monitor')" id="tab-btn-monitor" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-location-crosshairs text-blue-500"></i>
+                <span>4. 📍 Smart Monitoring</span>
+            </button>
+            <button onclick="switchTab('detect')" id="tab-btn-detect" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                <span>5. ⚠️ Risk Detection</span>
+            </button>
+            <button onclick="switchTab('predict')" id="tab-btn-predict" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-calculator text-[#6D4C41]"></i>
+                <span>6. 🔮 Prediction & Simulasi</span>
+            </button>
+            <button onclick="switchTab('recommend')" id="tab-btn-recommend" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-lightbulb text-emerald-600"></i>
+                <span>7. 💡 Smart Recommendation</span>
+            </button>
+            <button onclick="switchTab('evaluate')" id="tab-btn-evaluate" class="tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap">
+                <i class="fa-solid fa-chart-column text-[#6D4C41]"></i>
+                <span>8. 📊 Delivery Evaluation</span>
+            </button>
+        </div>
+
+        <!-- ================= 1. DASHBOARD / BERANDA ================= -->
+        <div id="view-dashboard" class="workflow-view space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="glass-warm p-5 rounded-3xl space-y-2 shadow-sm border-l-4 border-l-[#6D4C41]">
+                    <span class="text-xs text-zinc-500 font-medium">Total UMKM Terdaftar</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-[#6D4C41]" id="dashTotalUmkm">142 Mitra</span>
+                        <i class="fa-solid fa-store text-xl text-[#6D4C41]/60"></i>
+                    </div>
+                    <span class="text-[11px] text-emerald-600 font-semibold">↑ 18 klaster baru minggu ini</span>
+                </div>
+                <div class="glass-warm p-5 rounded-3xl space-y-2 shadow-sm border-l-4 border-l-amber-500">
+                    <span class="text-xs text-zinc-500 font-medium">Penghematan Biaya Kolektif</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-amber-600">Rp 42.8 Jt</span>
+                        <i class="fa-solid fa-piggy-bank text-xl text-amber-500/60"></i>
+                    </div>
+                    <span class="text-[11px] text-emerald-600 font-semibold">42.5% Lebih Hemat dari Ekspedisi Biasa</span>
+                </div>
+                <div class="glass-warm p-5 rounded-3xl space-y-2 shadow-sm border-l-4 border-l-[#A5D6A7]">
+                    <span class="text-xs text-zinc-500 font-medium">Indeks Keamanan Kriya</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-[#388E3C]">99.9%</span>
+                        <i class="fa-solid fa-shield-heart text-xl text-[#A5D6A7]"></i>
+                    </div>
+                    <span class="text-[11px] text-[#388E3C] font-semibold">0 Retur Barang Rusak</span>
+                </div>
+                <div class="glass-warm p-5 rounded-3xl space-y-2 shadow-sm border-l-4 border-l-[#F8BBD0]">
+                    <span class="text-xs text-zinc-500 font-medium">Emisi Karbon Ditekan</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-2xl font-bold text-[#6D4C41]">318 kg</span>
+                        <i class="fa-solid fa-leaf text-xl text-emerald-500"></i>
+                    </div>
+                    <span class="text-[11px] text-zinc-500">Berkat CollabRoute Pooling</span>
+                </div>
+            </div>
+
+            <!-- Quick Access Workflow Guide for Sellers -->
+            <div class="glass-warm p-6 rounded-3xl space-y-4">
+                <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Alur Solusi Logistik Lintas (Mudah & Transparan)</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-center">
+                    <div onclick="switchTab('map')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-[#FFF8E1] text-[#6D4C41] flex items-center justify-center font-bold">1</div>
+                        <h4 class="font-bold text-xs">Peta UMKM</h4>
+                        <p class="text-[10px] text-zinc-500">Daftar lokasi dan jenis produk kreatif.</p>
+                    </div>
+                    <div onclick="switchTab('collab')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold">2</div>
+                        <h4 class="font-bold text-xs">Gabung Kirim</h4>
+                        <p class="text-[10px] text-zinc-500">Konsolidasi rute A+B+C hemat ongkir.</p>
+                    </div>
+                    <div onclick="switchTab('monitor')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">3</div>
+                        <h4 class="font-bold text-xs">Monitor</h4>
+                        <p class="text-[10px] text-zinc-500">Pantau posisi & sensor suhu/getaran.</p>
+                    </div>
+                    <div onclick="switchTab('detect')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">4</div>
+                        <h4 class="font-bold text-xs">Deteksi Risiko</h4>
+                        <p class="text-[10px] text-zinc-500">Cek hambatan cuaca & rute macet.</p>
+                    </div>
+                    <div onclick="switchTab('predict')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-[#F8BBD0]/50 text-[#6D4C41] flex items-center justify-center font-bold">5</div>
+                        <h4 class="font-bold text-xs">Simulasi</h4>
+                        <p class="text-[10px] text-zinc-500">Kalkulasi ETA & uji skenario darurat.</p>
+                    </div>
+                    <div onclick="switchTab('evaluate')" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/50 hover:border-[#6D4C41] transition space-y-2">
+                        <div class="w-10 h-10 mx-auto rounded-xl bg-[#A5D6A7]/30 text-[#388E3C] flex items-center justify-center font-bold">6</div>
+                        <h4 class="font-bold text-xs">Evaluasi</h4>
+                        <p class="text-[10px] text-zinc-500">Skor efisiensi & klaim asuransi vault.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 2. PETA UMKM (FORM & VISUALISASI) ================= -->
+        <div id="view-map" class="workflow-view hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Pendaftaran UMKM & Produk Kreatif -->
+                <div class="glass-warm p-6 rounded-3xl space-y-4 shadow-sm">
+                    <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-map-pin text-[#6D4C41]"></i>
+                        <span>Daftarkan Titik Pengiriman UMKM</span>
+                    </h2>
+                    <p class="text-xs text-zinc-500">Masukkan data usaha kriya, batik, kuliner, atau fashion agar otomatis masuk ke sistem klaster logistik Lintas.</p>
+                    
+                    <form id="umkmForm" onsubmit="addUmkmNode(event)" class="space-y-3 pt-2">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Nama Usaha / Artisan</label>
+                            <input type="text" id="umkmName" required placeholder="Contoh: Griya Tenun Jepara" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#D7C49E] text-xs focus:outline-none focus:ring-2 focus:ring-[#6D4C41]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Jenis Produk Kreatif</label>
+                            <select id="umkmCategory" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#D7C49E] text-xs focus:outline-none">
+                                <option value="Kain & Batik">Kain & Batik (Butuh Kendali Kelembapan)</option>
+                                <option value="Keramik & Kriya Tanah Liat">Keramik & Kriya (Fragile / Rentan Benturan)</option>
+                                <option value="Ukiran Kayu & Seni Rupa">Ukiran Kayu & Seni Rupa</option>
+                                <option value="Kuliner Nusantara Awet">Kuliner Nusantara Awet (Vacuum Pack)</option>
+                                <option value="Fashion & Aksesoris">Fashion & Aksesoris</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1">Kota Asal (Workshop)</label>
+                                <input type="text" id="umkmOrigin" required placeholder="Pekalongan" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#D7C49E] text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1">Kota Tujuan Pelanggan</label>
+                                <input type="text" id="umkmDest" required placeholder="Jakarta" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#D7C49E] text-xs">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">Kebutuhan Pengiriman Khusus</label>
+                            <input type="text" id="umkmNeed" placeholder="Contoh: Bungkus ganda jerami & suhu stabil" class="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-[#D7C49E] text-xs">
+                        </div>
+                        <button type="submit" class="w-full py-3 rounded-xl bg-[#6D4C41] hover:bg-[#4E342E] text-white text-xs font-semibold shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span>Daftarkan & Masukkan ke Peta Klaster</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Interactive Visual Grid Map with Cute Pins -->
+                <div class="lg:col-span-2 glass-warm p-6 rounded-3xl space-y-4 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                                <i class="fa-solid fa-map"></i>
+                                <span>Peta Visual Klaster UMKM Nusantara</span>
+                            </h2>
+                            <p class="text-xs text-zinc-500">Visualisasi berbasis grid interaktif menampilkan titik workshop dan jalur logistik deterministik.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] text-xs font-mono font-bold">
+                            <i class="fa-solid fa-signal"></i> Real-time Grid
+                        </span>
+                    </div>
+
+                    <!-- Visual Canvas / Map Container -->
+                    <div class="relative bg-white dark:bg-zinc-900 rounded-2xl p-6 min-h-[320px] border border-[#D7C49E]/50 flex flex-col justify-center items-center overflow-hidden shadow-inner">
+                        <div class="absolute inset-0 bg-[radial-gradient(#d7c49e_1px,transparent_1px)] [background-size:20px_20px] opacity-30"></div>
+                        
+                        <!-- Map Grid Nodes List -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full relative z-10" id="umkmMapGrid">
+                            <!-- Default item 1 -->
+                            <div class="p-4 rounded-2xl bg-[#FFFDE7] dark:bg-zinc-800 border-2 border-[#6D4C41] shadow-sm space-y-2 relative">
+                                <div class="absolute top-2 right-2 text-xl animate-bounce">🏺</div>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8BBD0] text-[#6D4C41] font-bold">#UMKM-01</span>
+                                <h4 class="font-bold text-sm">Griya Tenun Cirebon</h4>
+                                <p class="text-[11px] text-zinc-500">Pekalongan ➔ Jakarta</p>
+                                <span class="block text-[10px] text-[#388E3C] font-semibold"><i class="fa-solid fa-check-circle"></i> Siap Gabung Kirim</span>
+                            </div>
+
+                            <!-- Default item 2 -->
+                            <div class="p-4 rounded-2xl bg-[#FFFDE7] dark:bg-zinc-800 border border-[#D7C49E] shadow-sm space-y-2 relative">
+                                <div class="absolute top-2 right-2 text-xl animate-pulse">🎨</div>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#A5D6A7]/30 text-[#388E3C] font-bold">#UMKM-02</span>
+                                <h4 class="font-bold text-sm">Studio Keramik Kasongan</h4>
+                                <p class="text-[11px] text-zinc-500">Yogyakarta ➔ Bandung</p>
+                                <span class="block text-[10px] text-amber-600 font-semibold"><i class="fa-solid fa-box"></i> Fragile Vault Aktif</span>
+                            </div>
+
+                            <!-- Default item 3 -->
+                            <div class="p-4 rounded-2xl bg-[#FFFDE7] dark:bg-zinc-800 border border-[#D7C49E] shadow-sm space-y-2 relative">
+                                <div class="absolute top-2 right-2 text-xl animate-bounce">🖼️</div>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8BBD0] text-[#6D4C41] font-bold">#UMKM-03</span>
+                                <h4 class="font-bold text-sm">Galeri Seniman Ubud</h4>
+                                <p class="text-[11px] text-zinc-500">Ubud ➔ Surabaya</p>
+                                <span class="block text-[10px] text-indigo-600 font-semibold"><i class="fa-solid fa-shield-halved"></i> Escrow Aman</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 3. GABUNG PENGIRIMAN (COLLABROUTE POOL) ================= -->
+        <div id="view-collab" class="workflow-view hidden space-y-6">
+            <div class="glass-warm p-6 rounded-3xl space-y-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                            <i class="fa-solid fa-boxes-packing text-amber-600"></i>
+                            <span>Gabung Pengiriman (CollabRoute™ Micro-Consolidation Pool)</span>
+                        </h2>
+                        <p class="text-xs text-zinc-500">Algoritma deterministik mencocokkan UMKM A + B + C dengan rute tujuan berdekatan ke dalam 1 van pengiriman bersama untuk memangkas biaya hingga 45%.</p>
+                    </div>
+                    <button onclick="runCollabConsolidation()" class="px-5 py-3 rounded-xl bg-[#6D4C41] hover:bg-[#4E342E] text-white text-xs font-semibold flex items-center space-x-2 shadow-md transition">
+                        <i class="fa-solid fa-wand-magic-sparkles" id="collabSpinner"></i>
+                        <span>Jalankan Algoritma Gabung Rute</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="collabPoolResults">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-[#6D4C41] space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-bold text-[#6D4C41]">Klaster A (Jalur Trans-Jawa)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] font-bold">Hemat 45%</span>
+                        </div>
+                        <h4 class="font-bold text-sm">Gabungan 3 Mitra UMKM</h4>
+                        <ul class="text-xs text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
+                            <li>Griya Batik Pekalongan</li>
+                            <li>Batik Tulis Solo Indah</li>
+                            <li>Kain Tenun Jepara</li>
+                        </ul>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between items-center text-xs font-semibold">
+                            <span>Estimasi Biaya Patungan:</span>
+                            <span class="text-emerald-600 font-bold">Rp 85.000 / UMKM</span>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E] space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-bold text-[#6D4C41]">Klaster B (Jalur Priangan)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#F8BBD0] text-[#6D4C41] font-bold">Hemat 38%</span>
+                        </div>
+                        <h4 class="font-bold text-sm">Gabungan 2 Mitra UMKM</h4>
+                        <ul class="text-xs text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
+                            <li>Studio Keramik Kasongan</li>
+                            <li>Tas Kulit Garut Artisan</li>
+                        </ul>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between items-center text-xs font-semibold">
+                            <span>Estimasi Biaya Patungan:</span>
+                            <span class="text-emerald-600 font-bold">Rp 95.000 / UMKM</span>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E] space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-bold text-[#6D4C41]">Klaster C (Jalur Nusantara Timur)</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] font-bold">Hemat 40%</span>
+                        </div>
+                        <h4 class="font-bold text-sm">Gabungan 3 Mitra UMKM</h4>
+                        <ul class="text-xs text-zinc-600 dark:text-zinc-300 space-y-1 list-disc list-inside">
+                            <li>Galeri Seniman Ubud</li>
+                            <li>Patung Kayu Gianyar</li>
+                            <li>Kain Tenun Sumba</li>
+                        </ul>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between items-center text-xs font-semibold">
+                            <span>Estimasi Biaya Patungan:</span>
+                            <span class="text-emerald-600 font-bold">Rp 110.000 / UMKM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 4. SMART MONITORING ================= -->
+        <div id="view-monitor" class="workflow-view hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Shipment Selector -->
+                <div class="glass-warm p-6 rounded-3xl space-y-4 shadow-sm">
+                    <h2 class="font-bold text-sm flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-truck-fast text-[#6D4C41]"></i>
+                        <span>Pilih Paket UMKM untuk Dimonitor</span>
+                    </h2>
+                    <div class="space-y-3">
+                        <div onclick="selectMonitorShipment(0)" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-[#6D4C41] shadow-sm transition">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-mono font-bold text-[#6D4C41]">#LNT-901-BATIK</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C]">Dalam Perjalanan</span>
+                            </div>
+                            <h4 class="font-bold text-sm">Kain Batik Tulis Motif Cirebon</h4>
+                            <p class="text-xs text-zinc-500">Pekalongan ➔ Jakarta</p>
+                        </div>
+                        <div onclick="selectMonitorShipment(1)" class="cursor-pointer p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E] shadow-sm transition">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-mono font-bold text-[#6D4C41]">#LNT-902-KERAMIK</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#F8BBD0] text-[#6D4C41]">Perhatian Getaran</span>
+                            </div>
+                            <h4 class="font-bold text-sm">Vase Tanah Liat Kasongan</h4>
+                            <p class="text-xs text-zinc-500">Yogyakarta ➔ Bandung</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Cute Timeline & Telemetry -->
+                <div class="lg:col-span-2 glass-warm p-6 rounded-3xl space-y-6 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                                <i class="fa-solid fa-timeline text-[#6D4C41]"></i>
+                                <span id="monitorCardTitle">Timeline & Sensor Telemetri Artisan</span>
+                            </h2>
+                            <p class="text-xs text-zinc-500">Pemantauan titik waypoint secara deterministik dengan sensor suhu, getaran G-Force, dan Escrow Vault.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] text-xs font-mono font-bold flex items-center space-x-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#388E3C] animate-ping"></span>
+                            <span>Live Sensor</span>
+                        </span>
+                    </div>
+
+                    <!-- Visual Timeline Pipeline -->
+                    <div class="relative bg-white dark:bg-zinc-900 rounded-2xl p-6 overflow-hidden min-h-[200px] flex items-center justify-center border border-[#D7C49E]/50">
+                        <div class="absolute left-16 right-16 h-1 bg-gradient-to-r from-[#6D4C41] via-[#A5D6A7] to-[#388E3C] z-0"></div>
+                        <div class="relative z-10 w-full flex items-center justify-between px-4">
+                            <div class="flex flex-col items-center space-y-1">
+                                <div class="w-12 h-12 rounded-2xl bg-[#6D4C41] text-white flex items-center justify-center shadow-md">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <span class="text-xs font-bold">Workshop</span>
+                                <span class="text-[10px] text-zinc-500">08:00 WIB</span>
+                            </div>
+                            <div class="flex flex-col items-center space-y-1">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#6D4C41] to-[#A5D6A7] text-white flex items-center justify-center shadow-lg ring-4 ring-[#6D4C41]/20 animate-pulse">
+                                    <i class="fa-solid fa-truck-moving text-xl"></i>
+                                </div>
+                                <span class="text-xs font-bold text-[#6D4C41]" id="timelineCurrentPos">KM 102 Tol Trans-Jawa</span>
+                                <span class="text-[10px] text-zinc-500">Kecepatan: 68 km/jam</span>
+                            </div>
+                            <div class="flex flex-col items-center space-y-1">
+                                <div class="w-12 h-12 rounded-2xl bg-[#FFF8E1] text-[#6D4C41] border border-[#D7C49E] flex items-center justify-center">
+                                    <i class="fa-solid fa-house-chimney-user"></i>
+                                </div>
+                                <span class="text-xs font-bold">Pelanggan</span>
+                                <span class="text-[10px] text-zinc-500">ETA 14:15 WIB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sensor Metrics Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-[#D7C49E]/40 shadow-sm">
+                            <span class="text-[11px] text-zinc-500 block mb-1">Suhu Ruang Paket</span>
+                            <span class="font-bold text-sm text-[#6D4C41]" id="teleTemp">25.8°C (Ideal)</span>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-[#D7C49E]/40 shadow-sm">
+                            <span class="text-[11px] text-zinc-500 block mb-1">Sensor Getaran</span>
+                            <span class="font-bold text-sm text-[#388E3C]" id="teleVib">0.03G (Aman)</span>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-[#D7C49E]/40 shadow-sm">
+                            <span class="text-[11px] text-zinc-500 block mb-1">Kelembapan Udara</span>
+                            <span class="font-bold text-sm text-blue-600" id="teleHum">55%</span>
+                        </div>
+                        <div class="bg-white dark:bg-zinc-900 p-3.5 rounded-2xl border border-[#D7C49E]/40 shadow-sm">
+                            <span class="text-[11px] text-zinc-500 block mb-1">Escrow Vault</span>
+                            <span class="font-bold text-sm text-[#6D4C41]">Terkunci 100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 5. RISK DETECTION ================= -->
+        <div id="view-detect" class="workflow-view hidden space-y-6">
+            <div class="glass-warm p-6 rounded-3xl space-y-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                            <span>Risk Detection Engine (Matriks Deterministik Berbasis Aturan)</span>
+                        </h2>
+                        <p class="text-xs text-zinc-500">Mendeteksi potensi keterlambatan atau masalah kurir berdasarkan kode cuaca, kepadatan rute, dan jenis muatan kriya.</p>
+                    </div>
+                    <button onclick="runRiskScan()" class="px-5 py-3 rounded-xl bg-[#6D4C41] hover:bg-[#4E342E] text-white text-xs font-semibold flex items-center space-x-2 shadow-md transition">
+                        <i class="fa-solid fa-arrows-rotate" id="riskScanSpinner"></i>
+                        <span>Scan Hambatan Logistik</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-amber-500/50 space-y-3 relative shadow-sm">
+                        <div class="absolute top-0 right-0 bg-amber-500/20 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-bl-xl">Aturan #W-02</div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                                <i class="fa-solid fa-cloud-rain text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Curah Hujan Tinggi (Kode W3)</h4>
+                                <span class="text-xs text-zinc-500">KM 80 - 110 Tol Cipali</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            Berdasarkan aturan deterministik, curah hujan >45mm/jam memicu penurunan kecepatan kendaraan sebesar 20% dan potensi lembab pada kain batik.
+                        </p>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between text-xs font-semibold text-amber-600">
+                            <span>Estimasi Penundaan: +35 Menit</span>
+                            <span class="underline cursor-pointer" onclick="switchTab('predict')">Simulasikan Rute →</span>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#F8BBD0] space-y-3 relative shadow-sm">
+                        <div class="absolute top-0 right-0 bg-[#F8BBD0] text-[#6D4C41] text-[10px] font-bold px-3 py-1 rounded-bl-xl">Aturan #C-04</div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#F8BBD0]/50 text-[#6D4C41] flex items-center justify-center">
+                                <i class="fa-solid fa-warehouse text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Kepadatan Gudang Transit</h4>
+                                <span class="text-xs text-zinc-500">Hub Utama Jakarta Timur</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            Antrean truk logistik melebihi ambang batas 75%. Memicu rekomendasi pengalihan otomatis ke Hub Satelit Cikarang.
+                        </p>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between text-xs font-semibold text-[#6D4C41]">
+                            <span>Status: Ambang Batas Terlampaui</span>
+                            <span class="underline cursor-pointer" onclick="switchTab('recommend')">Lihat Solusi →</span>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#A5D6A7] space-y-3 relative shadow-sm">
+                        <div class="absolute top-0 right-0 bg-[#A5D6A7]/30 text-[#388E3C] text-[10px] font-bold px-3 py-1 rounded-bl-xl">Aturan #P-01</div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#A5D6A7]/20 text-[#388E3C] flex items-center justify-center">
+                                <i class="fa-solid fa-shield-heart text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm">Validasi Kemasan Kriya</h4>
+                                <span class="text-xs text-zinc-500">Standar Eco-Pack Estimator</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                            Sensor getaran mencatat redaman kemasan ganda ramah lingkungan bekerja sempurna melindungi vas keramik dari jalan berlubang.
+                        </p>
+                        <div class="pt-2 border-t border-[#D7C49E]/40 flex justify-between text-xs font-semibold text-[#388E3C]">
+                            <span>Indeks Keamanan: 99.9%</span>
+                            <span>Optimal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 6. PREDICTION & SIMULATION ================= -->
+        <div id="view-predict" class="workflow-view hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- ETA Calculator -->
+                <div class="glass-warm p-6 rounded-3xl space-y-5 shadow-sm">
+                    <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-calculator text-[#6D4C41]"></i>
+                        <span>Kalkulator ETA & Kalkulasi Emisi Karbon Nyata</span>
+                    </h2>
+                    <p class="text-xs text-zinc-500">Perhitungan waktu tiba (ETA) didasarkan pada rumus kecepatan rata-rata ($v = s / t$) dikalikan koefisien cuaca.</p>
+
+                    <div class="space-y-4 pt-2">
+                        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 flex items-center justify-between shadow-sm">
+                            <div>
+                                <span class="text-xs text-[#6D4C41] font-semibold block">Prediksi Waktu Tiba (ETA)</span>
+                                <span class="text-2xl font-extrabold" id="calcEtaResult">14:15 WIB</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-emerald-600 font-semibold block">Akurasi Rumus</span>
+                                <span class="text-xl font-extrabold text-emerald-600">99.4%</span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 space-y-2 border border-[#D7C49E]/40 shadow-sm">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span>Penghematan Emisi Karbon (Collab Route)</span>
+                                <span class="text-emerald-600 font-bold">16.8 kg CO₂</span>
+                            </div>
+                            <div class="w-full bg-[#D7C49E]/20 h-2.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-[#6D4C41] to-[#A5D6A7] h-full w-[82%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What-If Simulation Sandbox -->
+                <div class="glass-warm p-6 rounded-3xl space-y-5 shadow-sm">
+                    <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-sliders text-[#6D4C41]"><span>Sandbox Simulasi Interaktif 'What-If'</span></i>
+                    </h2>
+                    <p class="text-xs text-zinc-500">Uji variabel gangguan secara manual untuk melihat kalkulasi ulang rute dan tindakan seketika.</p>
+
+                    <div class="space-y-4 pt-2">
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span>Tingkat Kepadatan / Kemacetan Rute</span>
+                                <span id="simCongestionLabel" class="font-bold text-[#6D4C41]">Normal (Koefisien 1.0)</span>
+                            </div>
+                            <input type="range" min="1" max="3" value="1" class="w-full accent-[#6D4C41] cursor-pointer" id="simCongestionRange" oninput="runWhatIfSimulation()">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span>Intensitas Curah Hujan</span>
+                                <span id="simRainLabel" class="font-bold text-[#6D4C41]">Cerah / Kering</span>
+                            </div>
+                            <input type="range" min="1" max="3" value="1" class="w-full accent-[#6D4C41] cursor-pointer" id="simRainRange" oninput="runWhatIfSimulation()">
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900 space-y-3 border border-[#D7C49E]/40 shadow-sm">
+                            <div class="flex items-center justify-between text-xs text-zinc-500">
+                                <span>Hasil Kalkulasi Algoritma Sandbox:</span>
+                                <span class="text-emerald-600 font-bold" id="simResultStatus">Jalur Optimal Terkendali</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 pt-1 border-t border-[#D7C49E]/30">
+                                <div>
+                                    <span class="text-[10px] text-zinc-500 block">Pergeseran Waktu ETA:</span>
+                                    <span class="text-lg font-bold text-[#6D4C41]" id="simResultEta">+0 Menit</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-zinc-500 block">Tindakan Sistem:</span>
+                                    <span class="text-xs font-semibold text-[#388E3C]" id="simResultAction">Pertahankan Jalur Utama</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 7. SMART RECOMMENDATION ================= -->
+        <div id="view-recommend" class="workflow-view hidden space-y-6">
+            <div class="glass-warm p-6 rounded-3xl space-y-6 shadow-sm">
+                <div>
+                    <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-lightbulb text-emerald-600"></i>
+                        <span>Smart Recommendation & Decision-Tree Matrix</span>
+                    </h2>
+                    <p class="text-xs text-zinc-500">Sistem memberikan saran tindakan instan berdasarkan pohon keputusan deterministik untuk menyelamatkan paket kerajinan.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-4 flex flex-col justify-between shadow-sm">
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#6D4C41]/10 text-[#6D4C41] flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-route"></i>
+                            </div>
+                            <h3 class="font-bold text-sm">Rerouting Otomatis Arteri Alternatif</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                                Jika kemacetan tol terdeteksi >30%, algoritma langsung mengalihkan kurir ke jalur arteri Karawang yang aman dari guncangan ekstrem untuk tekstil batik.
+                            </p>
+                        </div>
+                        <button onclick="triggerAction('Rerouting deterministik diterapkan! Kurir dialihkan ke arteri alternatif.')" class="w-full py-2.5 rounded-xl bg-[#6D4C41] hover:bg-[#4E342E] text-white text-xs font-semibold transition shadow-md">
+                            Terapkan Rerouting
+                        </button>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-4 flex flex-col justify-between shadow-sm">
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <h3 class="font-bold text-sm">Emergency Hub Satelit Cikarang</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                                Penyimpanan sementara di Hub Satelit dengan pengontrol suhu otomatis untuk mencegah kerusakan karya seni jika malam hari terjebak macet.
+                            </p>
+                        </div>
+                        <button onclick="triggerAction('Paket dialihkan ke Hub Satelit Cikarang dengan kontrol iklim aktif.')" class="w-full py-2.5 rounded-xl bg-[#6D4C41] hover:bg-[#4E342E] text-white text-xs font-semibold transition shadow-md">
+                            Gunakan Hub Satelit
+                        </button>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-4 flex flex-col justify-between shadow-sm">
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#A5D6A7]/30 text-[#388E3C] flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <h3 class="font-bold text-sm">Escrow Vault Instant Claim</h3>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                                Jika sensor getaran mencatat benturan ekstrem (>1.5G), klaim asuransi kerajinan cair otomatis dalam waktu 1x24 jam tanpa birokrasi rumit.
+                            </p>
+                        </div>
+                        <button onclick="triggerAction('Klaim Escrow Vault diajukan secara otomatis ke partner asuransi UMKM.')" class="w-full py-2.5 rounded-xl bg-[#388E3C] hover:bg-black text-white text-xs font-semibold transition shadow-md">
+                            Aktifkan Proteksi Vault
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 8. DELIVERY EVALUATION ================= -->
+        <div id="view-evaluate" class="workflow-view hidden space-y-6">
+            <div class="glass-warm p-6 rounded-3xl space-y-6 shadow-sm">
+                <div>
+                    <h2 class="font-bold text-base flex items-center space-x-2 text-[#6D4C41]">
+                        <i class="fa-solid fa-chart-column text-[#6D4C41]"></i>
+                        <span>Delivery Evaluation & Efficiency Scorecard</span>
+                    </h2>
+                    <p class="text-xs text-zinc-500">Evaluasi efisiensi biaya, emisi karbon, kepuasan pelanggan, dan indeks keamanan produk kreatif.</p>
+                </div>
+
+                <!-- KPI Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-1 shadow-sm">
+                        <span class="text-xs text-zinc-500">Skor Efisiensi Logistik</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-3xl font-extrabold text-[#6D4C41]">97.4</span>
+                            <span class="text-xs text-emerald-600 font-bold">+5.2%</span>
+                        </div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-1 shadow-sm">
+                        <span class="text-xs text-zinc-500">Penghematan Klaster</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-3xl font-extrabold text-[#6D4C41]">Rp 5.2jt</span>
+                            <span class="text-xs text-emerald-600 font-bold">Kolektif</span>
+                        </div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-1 shadow-sm">
+                        <span class="text-xs text-zinc-500">Indeks Keamanan Paket</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-3xl font-extrabold text-[#388E3C]">99.9%</span>
+                            <span class="text-xs text-emerald-600 font-bold">0 Retur</span>
+                        </div>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-[#D7C49E]/40 space-y-1 shadow-sm">
+                        <span class="text-xs text-zinc-500">Rating Klien Seni</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-3xl font-extrabold text-amber-500">4.95/5</span>
+                            <span class="text-xs text-zinc-500">(182 Ulasan)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical Table -->
+                <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-[#D7C49E]/40 overflow-hidden shadow-sm">
+                    <div class="p-4 border-b border-[#D7C49E]/30 flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-zinc-800 dark:text-zinc-200">Riwayat Perjalanan & Evaluasi Algoritma Lintas</h3>
+                        <span class="text-xs text-[#6D4C41] font-semibold cursor-pointer">Unduh Laporan Logistik PDF</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-[#FFFDE7] dark:bg-zinc-950 text-zinc-500 border-b border-[#D7C49E]/30">
+                                    <th class="p-3.5 font-semibold">ID Pengiriman</th>
+                                    <th class="p-3.5 font-semibold">Produk UMKM / Seni</th>
+                                    <th class="p-3.5 font-semibold">Rute Algoritma</th>
+                                    <th class="p-3.5 font-semibold">Waktu Tempuh</th>
+                                    <th class="p-3.5 font-semibold">Status Evaluasi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#D7C49E]/20">
+                                <tr>
+                                    <td class="p-3.5 font-mono font-bold text-[#6D4C41]">#LNT-900</td>
+                                    <td class="p-3.5 font-medium">Patung Kayu Ukir Jepara</td>
+                                    <td class="p-3.5 text-zinc-500">Jepara → Semarang</td>
+                                    <td class="p-3.5">1 Jam 50 Menit</td>
+                                    <td class="p-3.5"><span class="px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] font-medium">Optimal (100)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3.5 font-mono font-bold text-[#6D4C41]">#LNT-899</td>
+                                    <td class="p-3.5 font-medium">Tas Rajut Kulit Garut</td>
+                                    <td class="p-3.5 text-zinc-500">Garut → Bandung</td>
+                                    <td class="p-3.5">1 Jam 25 Menit</td>
+                                    <td class="p-3.5"><span class="px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] font-medium">Optimal (99)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3.5 font-mono font-bold text-[#6D4C41]">#LNT-898</td>
+                                    <td class="p-3.5 font-medium">Kain Tenun Ikat Sumba</td>
+                                    <td class="p-3.5 text-zinc-500">Waingapu → Denpasar</td>
+                                    <td class="p-3.5">3 Jam 45 Menit</td>
+                                    <td class="p-3.5"><span class="px-2 py-0.5 rounded-full bg-[#A5D6A7]/30 text-[#388E3C] font-medium">Efektif (97)</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Notification Box -->
+    <div id="toastBox" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-white px-5 py-3 rounded-2xl shadow-xl border border-[#D7C49E]/40 flex items-center space-x-3 text-xs">
+        <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+        <span id="toastMessage">Notifikasi sistem Lintas berhasil dijalankan.</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-[#D7C49E]/30 py-6 px-4 text-center text-xs text-zinc-500">
+        <p>© 2026 Lintas (Logistics Intelligence & Navigation Tracking Analysis System) • Solusi Logistik Deterministik untuk Pemberdayaan UMKM & Sektor Kreatif Nusantara.</p>
+    </footer>
+
+    <!-- JavaScript Deterministic Logic & Interactions -->
+    <script>
+        // Theme Toggle Function
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = "fa-solid fa-moon";
+            } else {
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-sun";
+            }
+        }
+
+        // Switch Tab Views Function
+        function switchTab(viewId) {
+            const views = document.querySelectorAll('.workflow-view');
+            views.forEach(v => v.classList.add('hidden'));
+
+            const targetView = document.getElementById('view-' + viewId);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => {
+                b.className = "tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-[#FFF8E1] border border-[#D7C49E]/40 whitespace-nowrap";
+            });
+
+            const activeBtn = document.getElementById('tab-btn-' + viewId);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-3 rounded-2xl font-semibold text-xs md:text-sm flex items-center space-x-2 transition-all bg-[#6D4C41] text-white shadow-md whitespace-nowrap";
+            }
+        }
+
+        // Add UMKM Node dynamically from form
+        let umkmCount = 3;
+        function addUmkmNode(event) {
+            event.preventDefault();
+            umkmCount++;
+            const name = document.getElementById('umkmName').value;
+            const cat = document.getElementById('umkmCategory').value;
+            const origin = document.getElementById('umkmOrigin').value;
+            const dest = document.getElementById('umkmDest').value;
+
+            const grid = document.getElementById('umkmMapGrid');
+            const card = document.createElement('div');
+            card.className = "p-4 rounded-2xl bg-[#FFFDE7] dark:bg-zinc-800 border-2 border-[#6D4C41] shadow-sm space-y-2 relative animate-pulse";
+            card.innerHTML = `
+                <div class="absolute top-2 right-2 text-xl">📦</div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8BBD0] text-[#6D4C41] font-bold">#UMKM-0${umkmCount}</span>
+                <h4 class="font-bold text-sm">${name}</h4>
+                <p class="text-[11px] text-zinc-500">${origin} ➔ ${dest}</p>
+                <span class="block text-[10px] text-[#388E3C] font-semibold"><i class="fa-solid fa-check-circle"></i> ${cat}</span>
+            `;
+            grid.appendChild(card);
+            document.getElementById('umkmForm').reset();
+            document.getElementById('dashTotalUmkm').innerText = (141 + umkmCount) + ' Mitra';
+            showToast("Titik UMKM berhasil didaftarkan dan terpetakan dalam klaster deterministik.");
+            switchTab('map');
+        }
+
+        // CollabRoute Consolidation Simulation
+        function runCollabConsolidation() {
+            const spinner = document.getElementById('collabSpinner');
+            spinner.className = "fa-solid fa-spinner fa-spin";
+            setTimeout(() => {
+                spinner.className = "fa-solid fa-wand-magic-sparkles";
+                showToast("Algoritma Gabung Kirim sukses! 8 UMKM berhasil dikonsolidasikan ke dalam 3 rute efisien.");
+            }, 1000);
+        }
+
+        // Select Monitor Shipment
+        function selectMonitorShipment(idx) {
+            const items = [
+                { title: "Timeline Kain Batik Cirebon", pos: "KM 102 Tol Trans-Jawa", temp: "25.8°C (Ideal)", vib: "0.03G (Aman)", hum: "55%" },
+                { title: "Timeline Vase Kasongan", pos: "Jl. Lingkar Nagreg KM 28", temp: "24.2°C (Stabil)", vib: "0.15G (Perhatian)", hum: "68%" }
+            ];
+            document.getElementById('monitorCardTitle').innerText = items[idx].title;
+            document.getElementById('timelineCurrentPos').innerText = items[idx].pos;
+            document.getElementById('teleTemp').innerText = items[idx].temp;
+            document.getElementById('teleVib').innerText = items[idx].vib;
+            document.getElementById('teleHum').innerText = items[idx].hum;
+            showToast("Telemetri paket UMKM dimuat.");
+        }
+
+        // Risk Scan
+        function runRiskScan() {
+            const spinner = document.getElementById('riskScanSpinner');
+            spinner.className = "fa-solid fa-spinner fa-spin";
+            setTimeout(() => {
+                spinner.className = "fa-solid fa-arrows-rotate";
+                showToast("Pemindaian Aturan Risiko selesai: Seluruh parameter terkendali.");
+            }, 900);
+        }
+
+        // What-If Simulation Sandbox
+        function runWhatIfSimulation() {
+            const cong = document.getElementById('simCongestionRange').value;
+            const rain = document.getElementById('simRainRange').value;
+
+            const congLabel = document.getElementById('simCongestionLabel');
+            const rainLabel = document.getElementById('simRainLabel');
+            const etaRes = document.getElementById('simResultEta');
+            const actionRes = document.getElementById('simResultAction');
+            const statusRes = document.getElementById('simResultStatus');
+
+            const congTexts = ["Normal (Koefisien 1.0)", "Padat (Koefisien 1.3)", "Macet Total (Koefisien 2.0)"];
+            const rainTexts = ["Cerah / Kering", "Gerimis Ringan", "Hujan Lebat (W3)"];
+
+            congLabel.innerText = congTexts[cong - 1];
+            rainLabel.innerText = rainTexts[rain - 1];
+
+            let score = parseInt(cong) + parseInt(rain);
+            if (score <= 2) {
+                etaRes.innerText = "+0 Menit";
+                actionRes.innerText = "Pertahankan Jalur Utama";
+                statusRes.innerText = "Jalur Optimal Terkendali";
+                statusRes.className = "text-emerald-600 font-bold";
+            } else if (score === 3 || score === 4) {
+                etaRes.innerText = "+35 Menit";
+                actionRes.innerText = "Rerouting Arteri Alternatif";
+                statusRes.innerText = "Peringatan Ambang Batas";
+                statusRes.className = "text-amber-600 font-bold";
+            } else {
+                etaRes.innerText = "+75 Menit";
+                actionRes.innerText = "Alihkan ke Hub Satelit Cikarang";
+                statusRes.innerText = "Risiko Penundaan Kritis";
+                statusRes.className = "text-red-500 font-bold";
+            }
+        }
+
+        // Trigger Action Toast
+        function triggerAction(msg) {
+            showToast(msg);
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById('toastBox');
+            const msgEl = document.getElementById('toastMessage');
+            msgEl.innerText = message;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
